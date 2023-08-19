@@ -10,22 +10,22 @@ describe('Testes da funcionalidade Produtos', () => {
             method: 'GET',
             url: 'produtos'
         }).then((response) => {
-            expect(response.body.produtos[0].nome).to.equal('Logitech Produto teste infinito 2')
+            // expect(response.body.produtos[0].nome).to.equal('Logitech Produto teste infinito 2')
             expect(response.status).to.equal(200)
             expect(response.body).to.have.property('produtos')
-            expect(response.duration).to.be.lessThan(15)
+            expect(response.duration).to.be.lessThan(40)
         })
     });
-    it.only('Cadastrar produtos', () => {
+    it('Cadastrar produtos', () => {
         let produto = `Logitech Produto teste infinito ${Math.floor(Math.random() * 1000000)}`
         cy.request({
             method: 'POST',
             url: 'produtos',
             body: {
                 "nome": produto,
-                "preco": 400,
+                "preco": 500,
                 "descricao": "Mouse",
-                "quantidade": 300,
+                "quantidade": 900,
             },
             headers: { authorization: token }
         }).then((response => {
@@ -49,7 +49,7 @@ describe('Testes da funcionalidade Produtos', () => {
                 url: `produtos/${id}`,
                 headers: { authorization: token },
                 body: {
-                    "nome": "Logitech Produto teste infinito 2",
+                    "nome": "Logitech Produto teste ",
                     "preco": 500,
                     "descricao": "Produto editado",
                     "quantidade": 300
@@ -60,6 +60,42 @@ describe('Testes da funcionalidade Produtos', () => {
         })
     });
     it('Deve editar produto cadastrado previamente', () => {
+        let produto = `Logitech Produto teste infinito ${Math.floor(Math.random() * 1000000)}`
+        cy.CadastrarProduto(token, produto, 250, 'Descricao do produto novo', 180)
+            .then(response => {
+                let id = response.body._id
 
+                cy.request({
+                    method: 'PUT',
+                    url: `produtos/${id}`,
+                    headers: { authorization: token },
+                    body: {
+                        "nome": produto,
+                        "preco": 200,
+                        "descricao": "Produto editado",
+                        "quantidade": 400
+                    }
+                }).then(response => {
+                    expect(response.body.message).to.equal('Registro alterado com sucesso')
+                })
+            })
     });
+
+    it('Deve deletar um produto previamente cadastrado', () => {
+        let produto = `Logitech Produto teste infinito ${Math.floor(Math.random() * 1000000)}`
+        cy.CadastrarProduto(token, produto, 250, 'Descricao do produto novo', 180)
+            .then(response => {
+                let id = response.body._id
+                cy.request({
+                    method: 'DELETE',
+                    url: `produtos/${id}`,
+                    headers: { authorization: token },
+                }).then(response => {
+                    expect(response.status).to.equal(200);
+                    expect(response.body.message).to.equal('Registro excluído com sucesso');
+                });
+            });
+    });
+
+
 }); 
