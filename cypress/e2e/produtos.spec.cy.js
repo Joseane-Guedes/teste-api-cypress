@@ -1,5 +1,11 @@
 
 describe('Testes da funcionalidade Produtos', () => {
+    let token
+    before(() => {
+        cy.token('fulano@qa.com', 'teste').then(tkn => { token = tkn })
+    });
+
+
     it('Listar produtos', () => {
         cy.request({
             method: 'GET',
@@ -16,14 +22,13 @@ describe('Testes da funcionalidade Produtos', () => {
             method: 'POST',
             url: 'produtos',
             body: {
-                "nome": "Logitech Produto teste infinito",
+                "nome": "Logitech Produto teste infinito 2",
                 // TODO: CRIAR PRODUTOS DINAMICAMENTE
                 "preco": 400,
                 "descricao": "Mouse",
                 "quantidade": 300,
             },
-            headers: { authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZ1bGFub0BxYS5jb20iLCJwYXNzd29yZCI6InRlc3RlIiwiaWF0IjoxNjkyNDAzMDQxLCJleHAiOjE2OTI0MDM2NDF9.Kz-VoS-Ws5PG929CEHa-OB3BbczjqZ0bUCtQfzvbJPs' }
-            // TODO: GERAR TOKEN DINAMICAMENTE
+            headers: { authorization: token }
         }).then((response => {
             expect(response.status).to.equal(201)
             expect(response.body.message).to.equal("Cadastro realizado com sucesso")
