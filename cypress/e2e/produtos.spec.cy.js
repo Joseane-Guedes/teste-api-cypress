@@ -17,13 +17,13 @@ describe('Testes da funcionalidade Produtos', () => {
             expect(response.duration).to.be.lessThan(15)
         })
     });
-    it.only('Cadastrar produtos', () => {
+    it('Cadastrar produtos', () => {
+        let produto = `Logitech Produto teste infinito ${Math.floor(Math.random() * 1000000)}`
         cy.request({
             method: 'POST',
             url: 'produtos',
             body: {
-                "nome": "Logitech Produto teste infinito 2",
-                // TODO: CRIAR PRODUTOS DINAMICAMENTE
+                "nome": 'produto',
                 "preco": 400,
                 "descricao": "Mouse",
                 "quantidade": 300,
@@ -33,6 +33,22 @@ describe('Testes da funcionalidade Produtos', () => {
             expect(response.status).to.equal(201)
             expect(response.body.message).to.equal("Cadastro realizado com sucesso")
         }))
-
+    });
+    it.only('Deve validar mensagem de erro ao cadastrar produto repetido', () => {
+        cy.request({
+            method: 'POST',
+            url: 'produtos',
+            headers: { authorization: token },
+            body: {
+                "nome": 'Logitech Produto teste infinito 2',
+                "preco": 400,
+                "descricao": "Mouse",
+                "quantidade": 300,
+            },
+            failOnStatusCode: false
+        }).then((response => {
+            expect(response.status).to.equal(400)
+            expect(response.body.message).to.equal("Já existe produto com esse nome")
+        }))
     });
 }); 
